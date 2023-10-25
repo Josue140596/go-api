@@ -15,6 +15,13 @@ type (
 		Update Controller
 		Delete Controller
 	}
+	CreateReq struct {
+		FirstName string `form:"name" json:"firstName" binding:"required"`
+		LastName  string `form:"lastName" json:"lastName" binding:"required"`
+		Email     string `form:"email" json:"email" binding:"required"`
+		Password  string `form:"password" json:"password" binding:"required"`
+		Phone     string `form:"phone" json:"phone"`
+	}
 )
 
 func MakeEndpoints() Endpoints {
@@ -29,14 +36,17 @@ func MakeEndpoints() Endpoints {
 
 func makeCreateEndpoint() Controller {
 	return func(c *gin.Context) {
-		c.String(http.StatusOK, "create")
-		c.JSON(http.StatusOK, gin.H{"user": "Bryan", "ok": true})
+		var json CreateReq
+		if err := c.ShouldBindJSON(&json); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"user": json.FirstName, "ok": true})
 	}
 }
 
 func makeGetEndpoint() Controller {
 	return func(c *gin.Context) {
-		c.String(http.StatusOK, "Get")
 		c.JSON(http.StatusOK, gin.H{"user": "Bryan", "ok": true})
 	}
 }
