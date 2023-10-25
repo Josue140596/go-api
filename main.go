@@ -12,6 +12,7 @@ func main() {
 	router := gin.Default()
 	user := user.MakeEndpoints()
 	router.GET("/user", gin.HandlerFunc(user.Get))
+	router.POST("/user", gin.HandlerFunc(user.Create))
 
 	s := &http.Server{
 		Addr:           ":8080",
