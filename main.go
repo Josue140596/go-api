@@ -10,7 +10,8 @@ import (
 
 func main() {
 	router := gin.Default()
-	user := user.MakeEndpoints()
+	userService := user.NewService()
+	user := user.MakeEndpoints(userService)
 	router.GET("/user", gin.HandlerFunc(user.Get))
 	router.POST("/user", gin.HandlerFunc(user.Create))
 
