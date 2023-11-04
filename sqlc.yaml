@@ -1,12 +1,12 @@
 version: "2"
 sql:
-  - schema: "./migration" #Directory of SQL migrations or path to single SQL file; or a list of paths.
-    queries: "./query" #Directory of SQL queries or path to single SQL file; or a list of paths
+  - schema: "./db/migration" #Directory of SQL migrations or path to single SQL file; or a list of paths.
+    queries: "./db/query" #Directory of SQL queries or path to single SQL file; or a list of paths
     engine: "postgresql" 
     gen: 
       go:
         package: "db" #The package name to use for the generated code. Defaults to out basename
         sql_package: "pgx/v5"
-        out: "./sqlc" #Output directory for generated code
+        out: "./db/sqlc" #Output directory for generated code
         emit_exact_table_names: false #If true, struct names will mirror table names. Otherwise, sqlc attempts to singularize plural table names
         emit_json_tags: true
