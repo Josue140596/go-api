@@ -58,7 +58,7 @@ func TestUpdateAccount(t *testing.T) {
 		ID:      accountCreated.ID,
 		Balance: utils.RandomMoney(), //Must be more than accountCreated.Balance and less than accountCreated.Balance
 	}
-	error := testQueries.UpdateAccount(context.Background(), arg)
+	_, error := testQueries.UpdateAccount(context.Background(), arg)
 	require.NoError(t, error)
 	require.NotEqual(t, accountCreated.Balance, arg.Balance)
 }
