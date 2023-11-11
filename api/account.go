@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5"
 )
 
 type createAccountRequest struct {
@@ -48,12 +49,40 @@ func (server *Server) getAccount(c *gin.Context) {
 		return
 	}
 	account, err := server.store.GetAccount(c, req.ID)
-
 	if err != nil {
+		if err == pgx.ErrNoRows {
+			c.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
 		c.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
 	c.JSON(http.StatusOK, account)
 
+}
+
+type getAccountsRequest struct {
+	PageID   int32 `form:"page_id" binding:"required,min=1"`
+	PageSize int32 `form:"page_size" binding:"required,min=5,max=10"`
+}
+
+func (server *Server) getAccounts(c *gin.Context) {
+	var req getAccountsRequest
+	//Validations
+	if err := c.ShouldBindQuery(&req); err != nil {
+		c.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+	arg := db.ListAccountsParams{
+		Limit:  req.PageSize,
+		Offset: (req.PageID - 1) * req.PageSize,
+	}
+	accounts, err := server.store.ListAccounts(c, arg)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	c.JSON(http.StatusOK, accounts)
 }

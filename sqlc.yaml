@@ -10,3 +10,4 @@ sql:
         out: "./db/sqlc" #Output directory for generated code
         emit_exact_table_names: false #If true, struct names will mirror table names. Otherwise, sqlc attempts to singularize plural table names
         emit_json_tags: true
+        emit_empty_slices: true
