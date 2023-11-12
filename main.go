@@ -5,22 +5,24 @@ import (
 	"fmt"
 	"go/api/api"
 	db "go/api/db/sqlc"
+	"go/api/utils"
 	"log"
 	"os"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-const (
-	dbSource      = "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable"
-	serverAddress = "0.0.0.0:8080"
-)
-
 var conn *pgxpool.Pool
 
 func main() {
+	//Configuration
+	conf, errorConfig := utils.LoadConfig(".")
+	if errorConfig != nil {
+		panic(fmt.Errorf("fatal error config file: %w", errorConfig))
+	}
+
 	var err error
-	conn, err = pgxpool.New(context.Background(), dbSource)
+	conn, err = pgxpool.New(context.Background(), conf.DB_SOURCE)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -30,7 +32,7 @@ func main() {
 	store := db.NewStore(conn)
 	server := api.NewServer(store)
 
-	err = server.Start(serverAddress)
+	err = server.Start(conf.SERVER_ADDRESS)
 	if err != nil {
 		log.Fatal("Cannot start server: ", err)
 	}
