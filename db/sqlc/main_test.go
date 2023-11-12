@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"fmt"
+	"go/api/utils"
 	"os"
 	"testing"
 
@@ -12,11 +13,14 @@ import (
 var testQueries *Queries
 var testDB *pgxpool.Pool
 
-const dbSource = "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable"
-
 func TestMain(m *testing.M) {
+	//Configuration
+	conf, errorConfig := utils.LoadConfig("../..")
+	if errorConfig != nil {
+		panic(fmt.Errorf("fatal error config file: %w", errorConfig))
+	}
 	var err error
-	testDB, err = pgxpool.New(context.Background(), dbSource)
+	testDB, err = pgxpool.New(context.Background(), conf.DB_SOURCE)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
